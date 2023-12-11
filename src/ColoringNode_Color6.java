@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 
 import java.util.List;
 
-public class ColoringNode extends Node {
+public class ColoringNode_Color6 extends Node {
     public Node parent; // défini dans Main()
     private boolean isRunning;
     private int x;
