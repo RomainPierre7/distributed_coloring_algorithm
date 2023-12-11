@@ -1,5 +1,4 @@
-all: compile run
-
+all: compile
 compile: 
 	javac -cp .:lib/jbotsim-standalone-1.2.0.jar -d build src/*.java
 

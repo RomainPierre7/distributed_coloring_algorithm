@@ -3,12 +3,12 @@ import io.jbotsim.core.Message;
 import io.jbotsim.core.Node;
 import static java.lang.Math.*;
 
-import java.io.Console;
 import java.util.List;
 
 public class ColoringNode extends Node {
     public Node parent; // défini dans Main()
-    private int x = getID();
+    private boolean isRunning;
+    private int x;
     private int l;
     private int l2;
     private List<Node> neighbors;
@@ -31,30 +31,43 @@ public class ColoringNode extends Node {
     @Override
     public void onStart() {
         setColor(Color.getColorAt(getID())); // couleur = ID
+        isRunning = true;
+        x = getID();
         l = log2ceil(Main.n);
 
         neighbors = getNeighbors();
         neighbors.remove(parent);
 
         for (Node n : neighbors){
-            send(n, new Message(getID()));
+            send(n, new Message(x));
         }
     }
 
     @Override
     public void onClock() {
-        int y = x;
-        // RECEIVE
-        for (Message m : getMailbox()){
-            y = (int) m.getContent();
-        }
-        // COMPUTE
-        x = posDiff(x, y);
+        if (isRunning){
+            // RECEIVE
+            int y = x;
+            for (Message m : getMailbox()){
+                y = (int) m.getContent();
+            }
+            
+            // COMPUTE
+            if (x != y){
+                x = posDiff(x, y);
+                l2 = l;
+                l = 1 + log2ceil(l);
+                if (l == l2){
+                    setColor(Color.getColorAt(x));
+                    isRunning = false;
+                    System.out.println("Node " + getID() + " is finished.");
+                }
+            }
 
-
-        //SEND
-        for (Node n : neighbors){
-            send(n, new Message(getID()));
+            //SEND
+            for (Node n : neighbors){
+                send(n, new Message(x));
+            }
         }
     }
 }

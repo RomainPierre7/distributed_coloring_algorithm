@@ -16,7 +16,7 @@ public class Main {
     for (int i = 0; i<n; i++){ // pour chaque noeuds
         ColoringNode u = (ColoringNode) tp.getNodes().get(i); // u = noeuds i
         u.setLocation(u.getX()+250, u.getY()+100); // décaler sa position
-        u.parent = tp.getNodes().get((i+1) % n); // son parent
+        //u.parent = tp.getNodes().get((i+1) % n); // son parent
     }
 
     JTopology jtp = new JTopology(tp);
