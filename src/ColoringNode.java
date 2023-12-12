@@ -8,19 +8,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// Algorithme Color6 => Color6to3 généralisés pour les arbres (prise en compte du noeud sans parent et ShiftDown)
+// Color6 => Color6to3 Algorithm Generalized for trees (considering nodes without parents and ShiftDown)
 
 public class ColoringNode extends Node {
-    public Node parent; // défini dans Main()
+    public Node parent; // defined in Main()
     private boolean isRunning;
     private int step; // 1 = Color 6 | 2 = Color6to3
-    private int state; // Utile pour Color6to3 | 1 = ShiftDown | 2 = ReducePalette
-    private int k; // Utile pour Color6to3 | k appartient à {3, 4, 5}
+    private int state; // Used for Color6to3 | 1 = ShiftDown | 2 = ReducePalette
+    private int k; // Used for Color6to3 | k belongs to {3, 4, 5}
     private int x;
     private int l;
     private int l2;
     private List<Node> neighbors;
-    private List<Integer> neighbors_color = new ArrayList<>(); // Utile pour stocker les couleurs des voisins dans ReducePalette
+    private List<Integer> neighbors_color = new ArrayList<>(); // Used to store neighbor colors in ReducePalette
 
     private static int posDiff(int x, int y){
         int p = 0;
@@ -37,10 +37,10 @@ public class ColoringNode extends Node {
         return (int) ceil(logN);
     }
 
-    private static int firstFree(List<Integer> liste) {
-        Set<Integer> ensemble = new HashSet<>(liste);
+    private static int firstFree(List<Integer> list) {
+        Set<Integer> set = new HashSet<>(list);
         int i = 0;
-        while (ensemble.contains(i)) {
+        while (set.contains(i)) {
             i++;
         }
         return i;
@@ -48,7 +48,7 @@ public class ColoringNode extends Node {
 
     @Override
     public void onStart() {
-        setColor(Color.getColorAt(getID())); // couleur = ID
+        setColor(Color.getColorAt(getID())); // color = ID
         isRunning = true;
         step = 1;
         state = 1;
@@ -76,9 +76,9 @@ public class ColoringNode extends Node {
                         y = (int) m.getContent();
                     }
                 } else {
-                    y = firstFree(List.of(x)); // FirstFree({x}) | Pas utile pour l'anneau mais sert à la généralité de l'algo (arbres)
+                    y = firstFree(List.of(x)); // FirstFree({x}) | Not necessary for the ring but serves the generality of the algorithm (trees)
                 }
-                
+
                 // COMPUTE
                 if (x != y){
                     x = posDiff(x, y);
@@ -86,18 +86,18 @@ public class ColoringNode extends Node {
                     l = 1 + log2ceil(l);
                     if (l == l2){
                         setColor(Color.getColorAt(x));
-                        System.out.println("Node " + getID() + "| Color6 is finished."); 
-                        step++;                  
+                        System.out.println("Node " + getID() + "| Color6 is finished.");
+                        step++;
                     }
                 }
 
-                //SEND | Premier SEND du premier ShiftDown de Color6to3 quand step = 2
+                //SEND | First SEND of the first ShiftDown of Color6to3 when step = 2
                 for (Node n : neighbors){
                     send(n, new Message(x));
                 }
             } else if (step == 2){ // Color6to3
                 if (k != 6){
-                    if (state == 1){ //ShiftDown | Pas utile pour l'anneau mais sert à la généralité de l'algo (arbres)
+                    if (state == 1){ //ShiftDown | Not necessary for the ring but serves the generality of the algorithm (trees)
                         System.out.println("Node " + getID() + "| ShiftDown " + (k - 2) + "/3.");
                         //RECEIVE
                         if (parent != null){
@@ -106,13 +106,13 @@ public class ColoringNode extends Node {
                                 y = (int) m.getContent();
                             }
                         } else {
-                            y = firstFree(List.of(x)); // FirstFree({x}) | Pas utile pour l'anneau mais sert à la généralité de l'algo (arbres)
+                            y = firstFree(List.of(x)); // FirstFree({x}) | Not necessary for the ring but serves the generality of the algorithm (trees)
                         }
 
                         //COMPUTE
                         setColor(Color.getColorAt(y));
 
-                        //SEND | Premier SEND du ReducePalette suivant
+                        //SEND | First SEND of the next ReducePalette
                         x = Color.indexOf(getColor());
                         for (Node n : neighbors){
                             send(n, new Message(x));
@@ -128,12 +128,12 @@ public class ColoringNode extends Node {
                         }
 
                         //COMPUTE
-                        if (x == k){ // Application de ReducePalette uniquement sur les noeuds de couleurs k
+                        if (x == k){ // Apply ReducePalette only to nodes of color k
                             x = firstFree(neighbors_color);
                             setColor(Color.getColorAt(x));
                         }
 
-                        //SEND | Premier SEND du ShiftDown suivant
+                        //SEND | First SEND of the next ShiftDown
                         for (Node n : neighbors){
                             send(n, new Message(x));
                         }
@@ -141,7 +141,7 @@ public class ColoringNode extends Node {
                         k++;
                         state = 1;
                     }
-                } else if (k == 6){ // Extinction du processeur
+                } else if (k == 6){ // Processor extinction
                     isRunning = false;
                     System.out.println("Node " + getID() + " is finished.");
                 }
