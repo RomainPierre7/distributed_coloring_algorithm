@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// Algorithme Color6 => Color6to3 généralisés pour les arbres (prise en compte du noeud sans parent et ShiftDown)
+
 public class ColoringNode extends Node {
     public Node parent; // défini dans Main()
     private boolean isRunning;
@@ -123,7 +125,7 @@ public class ColoringNode extends Node {
                         neighbors_color.clear();
                         for (Message m : getMailbox()){
                             neighbors_color.add((int) m.getContent());
-                            }
+                        }
 
                         //COMPUTE
                         if (x == k){ // Application de ReducePalette uniquement sur les noeuds de couleurs k
